@@ -1,2 +1,5 @@
-.ipynb
-.db
+
+*.ipynb
+*.db
+*.csv
+*.txt
