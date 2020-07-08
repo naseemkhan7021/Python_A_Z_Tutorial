@@ -1,0 +1,108 @@
+Modify file and directory access control lists (ACLs)
+
+  -b, --remove-all       remove all extended ACL entries
+  -x, --delete           delete one or more specified ACL entries
+  -f, --set-file         set ACL entries for FILE to ACL entries read
+                         from ACL_FILE
+  -k, --remove-default   remove all default ACL entries
+  -m, --modify           modify one or more specified ACL entries
+  -n, --no-mask          don't recalculate the effective rights mask
+      --mask             do recalculate the effective rights mask
+  -s, --set              set specified ACL entries on FILE
+  -V, --version          print version and exit
+  -h, --help             this help text
+
+At least one of (-b, -x, -f, -k, -m, -s) must be specified
+
+  Acl_entries are one or more comma-separated ACL entries from the following
+  list:
+
+    u[ser]::perm
+    u[ser]:uid:perm
+    g[roup]::perm
+    g[roup]:gid:perm
+    m[ask]:[:]perm
+    o[ther]:[:]perm
+
+  Default entries are like the above with the additional default identifier.
+  For example:
+
+    d[efault]:u[ser]:uid:perm
+
+  'perm' is either a 3-char permissions string in the form "rwx" with the
+  character - for no permission, or it is the octal representation of the
+  permissions, a value from 0 (equivalent to "---") to 7 ("rwx").
+  'uid' is a user name or a numerical uid.
+  'gid' is a group name or a numerical gid.
+
+For each file given as parameter, setfacl will either replace its complete ACL
+(-s, -f), or it will add, modify, or delete ACL entries.
+
+The following options are supported:
+
+-b, --remove-all
+  Remove all extended ACL entries.  The base ACL entries of the owner, group
+  and others are retained.  This option can be combined with the
+  -k,--remove-default option to delete all non-standard POSIX permissions.
+
+-x, --delete
+  Delete one or more specified entries from the file's ACL.  The owner, group
+  and others entries must not be deleted.  Acl_entries to be deleted should
+  be specified without permissions, as in the following list:
+
+    u[ser]:uid[:]
+    g[roup]:gid[:]
+    m[ask][:]
+    d[efault]:u[ser][:uid]
+    d[efault]:g[roup][:gid]
+    d[efault]:m[ask][:]
+    d[efault]:o[ther][:]
+
+-f, --set-file
+  Take the Acl_entries from ACL_FILE one per line.  Whitespace characters are
+  ignored, and the character "#" may be used to start a comment.  The special
+  filename "-" indicates reading from stdin.
+  Required entries are
+  - One user entry for the owner of the file.
+  - One group entry for the group of the file.
+  - One other entry.
+  If additional user and group entries are given:
+  - A mask entry for the file group class of the file.
+  - No duplicate user or group entries with the same uid/gid.
+  If it is a directory:
+  - One default user entry for the owner of the file.
+  - One default group entry for the group of the file.
+  - One default mask entry for the file group class.
+  - One default other entry.
+
+-k, --remove-default
+  Remove all default ACL entries. If no default ACL entries exist, no
+  warnings are issued.  This option can be combined with the -b,--remove-all
+  option to delete all non-standard POSIX permissions.
+
+-m, --modify
+  Add or modify one or more specified ACL entries.  Acl_entries is a
+  comma-separated list of entries from the same list as above.
+
+-n, --no-mask
+  Valid in conjunction with -m.  Do not recalculate the effective rights
+  mask. The default behavior of setfacl is to recalculate the ACL mask entry,
+  unless a mask entry was explicitly given.  The mask entry is set to the
+  union of all permissions of the owning group, and all named user and group
+  entries.  (These are exactly the entries affected by the mask entry).
+
+--mask
+  Valid in conjunction with -m.  Do recalculate the effective rights mask,
+  even if an ACL mask entry was explicitly given. (See the -n option.)
+
+-s, --set
+  Like -f, but set the file's ACL with ACL entries specified in a
+  comma-separated list on the command line.
+
+While the -x and -m options may be used in the same command, the -f and -s
+options may be used only exclusively.
+
+Directories may contain default ACL entries.  Files created in a directory
+that contains default ACL entries will have permissions according to the
+combination of the current umask, the explicit permissions requested and
+the default ACL entries.
