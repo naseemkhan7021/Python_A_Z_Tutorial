@@ -1,0 +1,4 @@
+# jupyter checkpoint
+*.ipynb_checkpoints
+.vscode
+*.zip
